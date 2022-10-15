@@ -2,14 +2,14 @@ module Netherite
   class Lexer
     def initialize(str)
       @input = str
-      @table = { 'g': [0, -1, -1, -1, 0, -1, 0, 0, 0],
-                 't': [1, 0, 0, 0, 5, 0, 0, 0, 0],
-                 'l': [2, 0, 0, 0, 0, 0, 0, 0, 0],
-                 'n': [0, 0, -1, 0, 0, 0, 0, 0, -1],
-                 's': [7, 0, 0, 0, 0, 0, -1, 0, 0],
-                 'i': [0, 0, 0, 0, 0, 0, 0, 8, 0],
-                 'c': [4, 0, 0, 0, 0, 0, 0, 0, 0],
-                 'o': [0, 0, 3, 0, 6, 0, 0, 0, 0]
+      @table = { "g" => [0, -1, -1, -1, 0, -1, 0, 0, 0],
+                 "t" => [1, 0, 0, 0, 5, 0, 0, 0, 0],
+                 "l" => [2, 0, 0, 0, 0, 0, 0, 0, 0],
+                 "n" => [0, 0, -1, 0, 0, 0, 0, 0, -1],
+                 "s" => [7, 0, 0, 0, 0, 0, -1, 0, 0],
+                 "i" => [0, 0, 0, 0, 0, 0, 0, 8, 0],
+                 "c" => [4, 0, 0, 0, 0, 0, 0, 0, 0],
+                 "o" => [0, 0, 3, 0, 6, 0, 0, 0, 0]
       }
     end
 
@@ -24,35 +24,49 @@ module Netherite
 
           temp = ''
           nxt = 0
-          while ('a'..'z').include?(@input[i]) && i < @input.size
-            nxt = @table[@input[i]][nxt]
-            if nxt == -1
-              case temp
-              when 'ln'
-                Token.push(Token.new(TokenType::LN, temp))
-              when 'lg'
-                Token.push(Token.new(TokenType::LG, temp))
-              when 'log'
-                Token.push(Token.new(TokenType::LOG, temp))
-              when 'sin'
-                Token.push(Token.new(TokenType::SIN, temp))
-              when 'cos'
-                Token.push(Token.new(TokenType::COS, temp))
-              when 'ctg'
-                Token.push(Token.new(TokenType::CTG, temp))
-              when 'tg'
-                Token.push(Token.new(TokenType::TG, temp))
+          while i < @input.size && ('a'..'z').include?(@input[i]) do
+            char2 = @input[i]
+            if !@table.key?(char2) || @table[char2][nxt] == 0 && @table[char2][0] == 0
+              temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
+              temp.clear
+              tokens.push(Token.new(TokenType::VAR, char2))
+              nxt = 0
+
+            else
+              nxt = @table[char2][nxt]
+              if nxt == -1
+                temp += char2
+                case temp
+                when 'ln'
+                  tokens.push(Token.new(TokenType::LN, temp.clone))
+                when 'lg'
+                  tokens.push(Token.new(TokenType::LG, temp.clone))
+                when 'log'
+                  tokens.push(Token.new(TokenType::LOG, temp.clone))
+                when 'sin'
+                  tokens.push(Token.new(TokenType::SIN, temp.clone))
+                when 'cos'
+                  tokens.push(Token.new(TokenType::COS, temp.clone))
+                when 'ctg'
+                  tokens.push(Token.new(TokenType::CTG, temp.clone))
+                when 'tg'
+                  tokens.push(Token.new(TokenType::TG, temp.clone))
+                end
+                nxt = 0
+                temp.clear
+              elsif nxt == 0
+                temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
+                temp.clear
+                temp += char2
+                nxt = @table[char2][nxt]
+              else
+                temp += char2
               end
             end
-            if nxt == 0
-              temp.each { |a| tokens.push(Token.new(TokenType::VAR, a)) }
-              temp.clear
-            end
-            temp += @input[i]
             i += 1
           end
 
-          temp.each { |a| tokens.push(Token.new(TokenType::VAR, a)) }
+          temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
           temp.clear
         when '0'..'9'
           j = i
