@@ -12,4 +12,4 @@ module Netherite
 end
 
 l = Netherite::Lexer.new("avscosa")
-l.tokens
+p l.tokens
