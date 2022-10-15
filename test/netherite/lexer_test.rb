@@ -15,14 +15,31 @@ module Netherite
         Netherite::Token.new(Netherite::TokenType::DIVIDE, "/"),
         Netherite::Token.new(Netherite::TokenType::LPAR, "("),
         Netherite::Token.new(Netherite::TokenType::COS, "cos"),
+        Netherite::Token.new(Netherite::TokenType::LPAR, "("),
         Netherite::Token.new(Netherite::TokenType::VAR, "a"),
         Netherite::Token.new(Netherite::TokenType::LN, "ln"),
         Netherite::Token.new(Netherite::TokenType::VAR, "c"),
+        Netherite::Token.new(Netherite::TokenType::LPAR, "("),
         Netherite::Token.new(Netherite::TokenType::NUMBER, 3.0),
         Netherite::Token.new(Netherite::TokenType::RPAR, ")"),
         Netherite::Token.new(Netherite::TokenType::RPAR, ")"),
       ]
       assert_equal(ares,a.tokens, "12.5+2/(cos(alnc(3))")
+
+      b = Netherite::Lexer.new("ab12cloge(a)")
+      bres = [
+        Netherite::Token.new(Netherite::TokenType::VAR, "a"),
+        Netherite::Token.new(Netherite::TokenType::VAR, "b"),
+        Netherite::Token.new(Netherite::TokenType::NUMBER, 12),
+        Netherite::Token.new(Netherite::TokenType::VAR, "c"),
+        Netherite::Token.new(Netherite::TokenType::LOG, "log"),
+        Netherite::Token.new(Netherite::TokenType::E, "e"),
+        Netherite::Token.new(Netherite::TokenType::LPAR, "("),
+        Netherite::Token.new(Netherite::TokenType::VAR, "a"),
+        Netherite::Token.new(Netherite::TokenType::RPAR, ")"),
+
+      ]
+      assert_equal(bres,b.tokens, "ab12cloge(a)")
     end
   end
 end
