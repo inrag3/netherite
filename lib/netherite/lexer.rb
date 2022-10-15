@@ -1,7 +1,7 @@
 module Netherite
   class Lexer
     def initialize(str)
-      @input = str
+      @input = str.gsub ',', '.'
       @table = { "g" => [0, -1, -1, -1, 0, -1, 0, 0, 0],
                  "t" => [1, 0, 0, 0, 5, 0, 0, 0, 0],
                  "l" => [2, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -9,7 +9,7 @@ module Netherite
                  "s" => [7, 0, 0, 0, 0, 0, -1, 0, 0],
                  "i" => [0, 0, 0, 0, 0, 0, 0, 8, 0],
                  "c" => [4, 0, 0, 0, 0, 0, 0, 0, 0],
-                 "o" => [0, 0, 3, 0, 6, 0, 0, 0, 0]
+                 "o" => [0, 0, 3, 0, 6, 0, 0, 0, 0],
       }
     end
 
@@ -70,7 +70,7 @@ module Netherite
           temp.clear
         when '0'..'9'
           j = i
-          while ('0'..'9').include?(@input[j])
+          while ('0'..'9').include?(@input[j]) || @input[j] == '.'
             j += 1
           end
           j -= 1
@@ -103,6 +103,14 @@ module Netherite
 
   class Token
     attr_accessor :type, :value
+
+    def ==(other)
+      other.class == Token && other.type == type && other.value == value
+    end
+
+    def eql?(other)
+      this == other
+    end
 
     def initialize(type, value)
       @type = type
