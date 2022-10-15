@@ -10,6 +10,7 @@ module Netherite
                  "i" => [0, 0, 0, 0, 0, 0, 0, 8, 0],
                  "c" => [4, 0, 0, 0, 0, 0, 0, 0, 0],
                  "o" => [0, 0, 3, 0, 6, 0, 0, 0, 0],
+                 "e" => [-1, 0, 0, 0, 0, 0, 0, 0, 0],
       }
     end
 
@@ -24,6 +25,7 @@ module Netherite
 
           temp = ''
           nxt = 0
+          flag = false
           while i < @input.size && ('a'..'z').include?(@input[i]) do
             char2 = @input[i]
             if !@table.key?(char2) || @table[char2][nxt] == 0 && @table[char2][0] == 0
@@ -34,8 +36,17 @@ module Netherite
 
             else
               nxt = @table[char2][nxt]
-              if nxt == -1
+              if nxt == 0
+                temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
+                temp.clear
                 temp += char2
+                nxt = @table[char2][nxt]
+              else
+                temp += char2
+              end
+
+              if nxt == -1
+                #temp += char2
                 case temp
                 when 'ln'
                   tokens.push(Token.new(TokenType::LN, temp.clone))
@@ -51,21 +62,20 @@ module Netherite
                   tokens.push(Token.new(TokenType::CTG, temp.clone))
                 when 'tg'
                   tokens.push(Token.new(TokenType::TG, temp.clone))
+                when 'e'
+                  tokens.push(Token.new(TokenType::E, temp.clone))
                 end
                 nxt = 0
                 temp.clear
-              elsif nxt == 0
-                temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
-                temp.clear
-                temp += char2
-                nxt = @table[char2][nxt]
-              else
-                temp += char2
-              end
+                end
             end
             i += 1
+            flag = true
           end
 
+          if @input.size != i && flag
+            i-=1
+          end
           temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
           temp.clear
         when '0'..'9'
@@ -135,5 +145,6 @@ module Netherite
     SIN = 13
     TG = 14
     CTG = 15
+    E = 16
   end
 end

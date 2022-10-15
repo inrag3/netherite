@@ -11,3 +11,5 @@ module Netherite
   end
 end
 
+a = Netherite::Lexer.new("ab12cloge(a)")
+p a.tokens
