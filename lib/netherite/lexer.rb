@@ -1,4 +1,5 @@
 module Netherite
+
   class Lexer
     def initialize(str)
       @input = str

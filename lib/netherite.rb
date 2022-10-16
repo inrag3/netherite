@@ -2,6 +2,7 @@
 
 require_relative "netherite/version"
 require_relative 'netherite/lexer'
+require_relative 'netherite/postfix_builder'
 
 module Netherite
   class Error < StandardError; end
@@ -11,6 +12,10 @@ module Netherite
   end
 end
 
-a = Netherite::Lexer.new("ab12clog(e,a)^(2cos(a)")
+a = Netherite::Lexer.new("ab12clog(e,a)^(2cos(a))")
 b = a.tokens
-p a.normalize_tokens b
+c = a.normalize_tokens b
+
+post = Netherite::PostfixBuilder.new c
+
+pp post.postfix
