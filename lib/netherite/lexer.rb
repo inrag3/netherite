@@ -1,7 +1,7 @@
 module Netherite
   class Lexer
     def initialize(str)
-      @input = str.gsub ',', '.'
+      @input = str
       @table = { "g" => [0, -1, -1, -1, 0, -1, 0, 0, 0],
                  "t" => [1, 0, 0, 0, 5, 0, 0, 0, 0],
                  "l" => [2, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -10,8 +10,7 @@ module Netherite
                  "i" => [0, 0, 0, 0, 0, 0, 0, 8, 0],
                  "c" => [4, 0, 0, 0, 0, 0, 0, 0, 0],
                  "o" => [0, 0, 3, 0, 6, 0, 0, 0, 0],
-                 "e" => [-1, 0, 0, 0, 0, 0, 0, 0, 0],
-      }
+                 "e" => [-1, 0, 0, 0, 0, 0, 0, 0, 0] }
     end
 
     def tokens
@@ -67,14 +66,14 @@ module Netherite
                 end
                 nxt = 0
                 temp.clear
-                end
+              end
             end
             i += 1
             flag = true
           end
 
           if @input.size != i && flag
-            i-=1
+            i -= 1
           end
           temp.each_char { |a| tokens.push(Token.new(TokenType::VAR, a)) }
           temp.clear
@@ -86,6 +85,8 @@ module Netherite
           j -= 1
           tokens.push(Token.new(TokenType::NUMBER, Float(@input[i..j])))
           i = j
+        when ','
+          tokens.push(Token.new(TokenType::BORDER, char))
         when '+'
           tokens.push(Token.new(TokenType::PLUS, char))
         when '-'
@@ -109,6 +110,24 @@ module Netherite
 
       tokens
     end
+
+    def normalize_tokens(tokens)
+      res = []
+      i = 0
+      while i < tokens.size - 1
+        t1 = tokens[i]
+        t2 = tokens[i + 1]
+        res.push(t1)
+        unless t1.operation? || t2.operation? || t1.lpar? || t2.rpar? || t1.border? || t2.border? || (t1.func? && t2.type == TokenType::LPAR)
+          res.push(Token.new(TokenType::MULTIPLY, "*"))
+        end
+        i += 1
+      end
+      unless tokens.empty?
+        res.push tokens[-1]
+      end
+      res
+    end
   end
 
   class Token
@@ -118,13 +137,49 @@ module Netherite
       other.class == Token && other.type == type && other.value == value
     end
 
-    def eql?(other)
-      this == other
-    end
-
     def initialize(type, value)
       @type = type
       @value = value
+    end
+
+    def func?
+      type == TokenType::LN ||
+        type == TokenType::LG ||
+        type == TokenType::LOG ||
+        type == TokenType::COS ||
+        type == TokenType::SIN ||
+        type == TokenType::TG ||
+        type == TokenType::CTG
+    end
+
+    def e?
+      type == TokenType::E
+    end
+
+    def operation?
+      type == TokenType::PLUS ||
+        type == TokenType::MINUS ||
+        type == TokenType::DIVIDE ||
+        type == TokenType::MULTIPLY ||
+        type == TokenType::POWER
+    end
+
+    def var_number?
+      type == TokenType::VAR ||
+        type == TokenType::NUMBER ||
+        type == TokenType::E
+    end
+
+    def lpar?
+      type == TokenType::LPAR
+    end
+
+    def rpar?
+      type == TokenType::RPAR
+    end
+
+    def border?
+      type == TokenType::BORDER
     end
   end
 
@@ -146,5 +201,6 @@ module Netherite
     TG = 14
     CTG = 15
     E = 16
+    BORDER = 17
   end
 end

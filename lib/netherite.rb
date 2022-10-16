@@ -11,5 +11,6 @@ module Netherite
   end
 end
 
-a = Netherite::Lexer.new("ab12cloge(a)")
-p a.tokens
+a = Netherite::Lexer.new("ab12clog(e,a)^(2cos(a)")
+b = a.tokens
+p a.normalize_tokens b
