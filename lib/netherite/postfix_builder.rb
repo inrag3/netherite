@@ -41,7 +41,7 @@ module Netherite
           end
         end
       end
-      while !stack.empty?
+      until stack.empty?
         el = stack.last
         if el.lpar?
           throw BuildPostfixException # Нарашем баланс скобок

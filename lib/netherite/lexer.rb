@@ -129,6 +129,32 @@ module Netherite
       end
       res
     end
+
+    def fix_unar_operations(tokens)
+      unless tokens.empty?
+        if tokens[0].type == TokenType::MINUS
+          tokens[0].type = TokenType::UNMINUS
+        end
+
+        if tokens[0].type == TokenType::PLUS
+          tokens[0].type = TokenType::UNPLUS
+        end
+        i = 1
+        while i < tokens.size - 1
+          if (tokens[i].lpar? || tokens[i].operation? || tokens[i].border?) && (tokens[i + 1].type == TokenType::MINUS || tokens[i + 1].type == TokenType::PLUS)
+
+            if tokens[i + 1].type == TokenType::MINUS
+              tokens[i + 1].type = TokenType::UNMINUS
+            else
+              tokens[i + 1].type = TokenType::UNPLUS
+            end
+          end
+          i += 1
+        end
+      end
+      tokens
+    end
+
   end
 
   class Token
@@ -153,6 +179,10 @@ module Netherite
         type == TokenType::CTG
     end
 
+    def two_pos_func?
+      type == TokenType::LOG
+    end
+
     def e?
       type == TokenType::E
     end
@@ -162,7 +192,14 @@ module Netherite
         type == TokenType::MINUS ||
         type == TokenType::DIVIDE ||
         type == TokenType::MULTIPLY ||
-        type == TokenType::POWER
+        type == TokenType::POWER ||
+        type == TokenType::UNPLUS ||
+        type == TokenType::UNMINUS
+    end
+
+    def unary_operation?
+      type == TokenType::UNPLUS ||
+        type == TokenType::UNMINUS
     end
 
     def var_number?
@@ -203,5 +240,7 @@ module Netherite
     CTG = 15
     E = 16
     BORDER = 17
+    UNMINUS = 18
+    UNPLUS = 19
   end
 end
