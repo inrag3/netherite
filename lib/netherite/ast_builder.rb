@@ -110,8 +110,7 @@ module Netherite
   end
 
   class Node
-    attr_accessor :parent
-    attr_reader :value, :token
+    attr_accessor :parent, :value, :token
 
     def initialize(token)
       @token = token
