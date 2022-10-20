@@ -50,16 +50,16 @@ module Netherite
 
     def create_var_node
       @pos += 1
-      VarNode.new @tokens[@pos - 1]
+      Node.new @tokens[@pos - 1]
     end
 
     def create_num_node
       @pos += 1
-      NumberNode.new @tokens[@pos - 1]
+      Node.new @tokens[@pos - 1]
     end
 
     def create_bin_op_node
-      temp = BinOpNode.new @tokens[@pos]
+      temp = Node.new @tokens[@pos]
       @pos += 1
       throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
       temp.right = create_node
@@ -72,7 +72,7 @@ module Netherite
     end
 
     def create_unary_operation_node
-      temp = UnOpNode.new(@tokens[@pos])
+      temp = Node.new(@tokens[@pos])
       @pos += 1
       throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
       temp.right = create_node
@@ -82,21 +82,21 @@ module Netherite
 
     def create_func_node
       if @tokens[@pos].two_pos_func?
-        temp = FuncWith2ArgNode.new(@tokens[@pos])
+        temp = Node.new(@tokens[@pos])
         @pos += 1
         throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
-        temp.second_argument = create_node
-        temp.second_argument.parent = temp
+        temp.right = create_node
+        temp.right.parent = temp
         throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
-        temp.argument = create_node
-        temp.argument.parent = temp
+        temp.left = create_node
+        temp.left.parent = temp
 
       else
-        temp = FuncNode.new(@tokens[@pos])
+        temp = Node.new(@tokens[@pos])
         @pos += 1
         throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
-        temp.argument = create_node
-        temp.argument.parent = temp
+        temp.left = create_node
+        temp.left.parent = temp
 
       end
       temp
@@ -104,85 +104,93 @@ module Netherite
 
     def create_e_node
       @pos += 1
-      ENode.new @tokens[@pos - 1]
+      Node.new @tokens[@pos - 1]
     end
 
   end
 
   class Node
-    attr_accessor :parent, :value, :token
+    attr_accessor :parent, :value, :token, :nodeType, :left, :right
 
-    def initialize(token)
+    def initialize(token, parent = nil)
       @token = token
       @value = token.value
-      @parent = nil
+      @parent = parent
+      @left = nil
+      @right = nil
+      set_token_type! token
+
     end
 
     def set_token!(token)
       @token = token
       @value = token.value
     end
-  end
 
-  class BinOpNode < Node
-    attr_accessor :left, :right
+    private
 
-    def initialize(token, left: nil, right: nil)
-      super token
-      @left = left
-      @right = right
+    def set_token_type!(token)
+      if token.func?
+        if token.type == TokenType::LOG
+          @nodeType = NodeType::FUNCBINNODE
+        else
+          @nodeType = NodeType::FUNCNODE
+        end
+
+      elsif token.operation?
+        if token.unary_operation?
+          @nodeType = NodeType::UNARNODE
+        else
+          @nodeType = NodeType::BINNODE
+        end
+      elsif token.var_number?
+        case token.type
+        when TokenType::NUMBER
+          @nodeType = NodeType::NUMBER
+        when TokenType::VAR
+          @nodeType = NodeType::VAR
+        else
+          @nodeType = NodeType::E
+
+        end
+      end
     end
 
-  end
+    def replace_this_node(token)
+      temp = Node.new token
+      unless parent.nil?
+        if parent.left == self
+          parent.left = temp
+        else
+          parent.right = temp
+        end
+        temp.parent = @parent
+      end
+      if temp.nodeType == NodeType::UNARNODE || temp.nodeType == NodeType::UNARNODE || temp.nodeType == NodeType::BINNODE || temp.nodeType == NodeType::FUNCBINNODE
+        temp.left = @left
+        unless left.nil?
+          left.parent = temp
+        end
+        if temp.nodeType == NodeType::BINNODE || temp.nodeType == NodeType::FUNCBINNODE
 
-  class UnOpNode < Node
-    attr_accessor :right
+          temp.right = @right
+          unless right.nil?
+            right.parent = temp
+          end
+        end
 
-    def initialize(token, right: nil)
-      super token
-      @right = right
-    end
-
-  end
-
-  class VarNode < Node
-    attr_accessor :name
-
-    def initialize(token)
-      super token
-      @name = token.value
-    end
-
-  end
-
-  class NumberNode < Node
-    attr_accessor :value
-
-    def initialize(token)
-      super token
-      @value = Float(token.value)
-    end
-
-  end
-
-  class FuncNode < Node
-    attr_accessor :argument
-
-    def initialize(token)
-      super token
-      @argument = nil
-    end
-  end
-
-  class FuncWith2ArgNode < FuncNode
-    attr_accessor :second_argument
-
-    def initialize(token)
-      super token
-      @second_argument = nil
+      end
+      temp
     end
   end
 
-  class ENode < Node
+  module NodeType
+    NUMBER = 0
+    VAR = 1
+    BINNODE = 2
+    UNARNODE = 3
+    FUNCNODE = 4
+    FUNCBINNODE = 5
+    E = 6
   end
 end
