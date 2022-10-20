@@ -118,6 +118,7 @@ module Netherite
       @parent = parent
       @left = nil
       @right = nil
+      @indent = 0
       set_token_type! token
 
     end
@@ -127,7 +128,7 @@ module Netherite
       @value = token.value
     end
 
-    private
+    #private точно приватные свойства?
 
     def set_token_type!(token)
       if token.func?
@@ -156,6 +157,7 @@ module Netherite
       end
     end
 
+    #TODO: по-моему, типы ноды не меняются нигде
     def replace_this_node(token)
       temp = Node.new token
       unless parent.nil?
@@ -165,6 +167,11 @@ module Netherite
           parent.right = temp
         end
         temp.parent = @parent
+      else
+        set_token!(token)
+        set_token_type!(token)
+        @left = nil
+        @right = nil
       end
       if temp.nodeType == NodeType::UNARNODE || temp.nodeType == NodeType::UNARNODE || temp.nodeType == NodeType::BINNODE || temp.nodeType == NodeType::FUNCBINNODE
         temp.left = @left
@@ -178,9 +185,20 @@ module Netherite
             right.parent = temp
           end
         end
-
       end
       temp
+    end
+
+    def print(node = self)
+      puts "#{" " * (@indent)}----[#{node.value}]"
+      @indent += 4
+      if node.left != nil
+        print(node.left)
+      end
+      if node.right != nil
+        print(node.right)
+      end
+      @indent -= 4
     end
   end
 
