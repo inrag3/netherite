@@ -26,6 +26,8 @@ module Differentiation
       case root.nodeType
       when Netherite::NodeType::BINNODE
         handleBinOp(root)
+      when Netherite::NodeType::VAR
+        root = root.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, root.value != @var ? 0 : 1))
       end
     end
 
@@ -49,6 +51,12 @@ module Differentiation
       when Netherite::TokenType::POWER
         handleNodeAfterPower(node.right)
         #tryToDeletePower(node)
+      when Netherite::TokenType::DIVIDE
+        if !searchDiffVar(node.right)
+          recurDiff(node.left)
+        else
+          handleNodeAfterDivide(node)
+        end
       end
     end
 
@@ -72,6 +80,38 @@ module Differentiation
         end
     end
 
+    def handleNodeAfterDivide(node)
+      udx = Marshal.load(Marshal.dump(node.left))
+      vdx = Marshal.load(Marshal.dump(node.right))
+      udx.parent = nil #u'(x)
+      vdx.parent = nil #v'(x)
+      recurDiff(udx)
+      recurDiff(vdx)
+      v = Marshal.load(Marshal.dump(node.right)) #v; node.left = u
+      temp_pow = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::POWER, "^"))
+      node.right.parent = temp_pow
+      temp_pow.left = node.right
+      temp_pow.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 2))
+      node.right = temp_pow
+
+      temp_minus = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
+      temp_minus.parent = node
+      temp_minus.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+      temp_minus.right.parent = temp_minus
+      temp_minus.right.right = node.left
+      node.left.parent = temp_minus.right
+      node.left = temp_minus
+      temp_minus.right.left = vdx
+      vdx.parent = temp_minus.right
+
+      temp_minus.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+      temp_minus.left.parent = temp_minus
+      temp_minus.left.left = udx
+      udx.parent = temp_minus.left
+      temp_minus.left.right = v
+      v.parent = temp_minus.left
+    end
+
     def handleNodeAfterPower(node)
       case node.nodeType
       when Netherite::NodeType::NUMBER
@@ -83,12 +123,19 @@ module Differentiation
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
         addValueOfPowSimple(node)
       when Netherite::NodeType::BINNODE
-        if node.token.type == Netherite::TokenType::DIVIDE || node.token.type == Netherite::TokenType::MULTIPLY
-          addValueOfPowComplex(node.right)
-        node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
-        node.parent.right.left = node
-        node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
-        elsif node.token.type == Netherite::TokenType::MINUS
+        case node.token.type
+        when Netherite::TokenType::DIVIDE
+          addValueOfPowComplex(node)
+          node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
+          node.parent.right.left = node
+          node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
+        when Netherite::TokenType::MULTIPLY
+          addValueOfPowComplex(node)
+          node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
+          node.parent.right.left = node
+          node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
+        when Netherite::TokenType::MINUS
+          addValueOfPowComplex(node)
           if node.right.token.type == Netherite::TokenType::NUMBER
             node.right.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, node.right.value + 1))
           else
@@ -96,15 +143,20 @@ module Differentiation
             node.parent.right.left = node
             node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
           end
-        elsif node.token.type == Netherite::TokenType::PLUS
-          addValueOfPowComplex(node.right)
-          if node.right.token.type == Netherite::TokenType::NUMBER
-            node.right.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, node.right.value - 1))
-          else
-            node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
-            node.parent.right.left = node
-            node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
-          end
+          when Netherite::TokenType::PLUS
+            addValueOfPowComplex(node)
+            if node.right.token.type == Netherite::TokenType::NUMBER
+              if node.right.value - 1 >= 0
+               node.right.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, node.right.value - 1))
+              else
+               node.right.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, -(node.right.value - 1)))
+               node.replace_this_node(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
+              end
+            else
+              node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
+              node.parent.right.left = node
+              node.parent.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
+            end
         end
       end
     end
@@ -117,7 +169,6 @@ module Differentiation
       node.parent.left = temp_node
     end
 
-    #todo
     def addValueOfPowComplex(node)
       temp_node = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
       pow_node = node.clone
