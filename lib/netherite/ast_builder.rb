@@ -189,16 +189,27 @@ module Netherite
       temp
     end
 
-    def print(node = self)
+    def printAST(node = self)
       puts "#{" " * (@indent)}----[#{node.value}]"
       @indent += 4
       if node.left != nil
-        print(node.left)
+        printAST(node.left)
       end
       if node.right != nil
-        print(node.right)
+        printAST(node.right)
       end
       @indent -= 4
+    end
+
+    #todo скобки
+    def toString(node = self)
+      if node.left != nil
+        toString(node.left)
+      end
+      print node.value.to_s
+      if node.right != nil
+        toString(node.right)
+      end
     end
   end
 

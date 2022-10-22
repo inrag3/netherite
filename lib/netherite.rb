@@ -11,7 +11,7 @@ module Netherite
 
   # Your code goes here...
   extend Differentiation
-  Differentiation.diff("6*x + 2", "x")
+  Differentiation.diff("5-x", "x")
 end
 
 # a = Netherite::Lexer.new "cos(x*log(a,x)/(5*x-4*y^z))"
