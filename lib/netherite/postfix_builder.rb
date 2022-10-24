@@ -61,6 +61,8 @@ module Netherite
           2
         when TokenType::POWER
           3
+        when TokenType::UNMINUS , TokenType::UNPLUS
+          4
         end
       else
         -1
