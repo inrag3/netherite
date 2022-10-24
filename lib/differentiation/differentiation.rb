@@ -32,7 +32,7 @@ module Differentiation
     end
 
     def handleBinOp(node)
-      unless searchDiffVar(node)
+      if !searchDiffVar(node) && node.parent.nil?
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, 0))
       end
       case node.token.type
@@ -45,8 +45,12 @@ module Differentiation
         handleNodeAfterPlus(node.right)
         tryToDeleteMinus(node)
       when Netherite::TokenType::MULTIPLY
-        handleNodeAfterMultiply(node.left)
-        handleNodeAfterMultiply(node.right)
+        if searchDiffVar(node.left) && searchDiffVar(node.right)
+          handleMultilpy(node)
+        else
+          handleNodeAfterMultiply(node.left)
+          handleNodeAfterMultiply(node.right)
+        end
         tryToDeleteMult(node)
       when Netherite::TokenType::POWER
         handleNodeAfterPower(node.right)
@@ -66,10 +70,11 @@ module Differentiation
         node.value = 0
       when Netherite::NodeType::VAR
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, node.value != @var ? 0 : 1))
-      else
-        recurDiff(node)
+      when Netherite::NodeType::BINNODE
+        handleBinOp(node)
       end
     end
+
 
     def handleNodeAfterMultiply(node)
       case node.nodeType
@@ -77,7 +82,44 @@ module Differentiation
         if node.value == @var
           node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
         end
-        end
+      when Netherite::NodeType::BINNODE
+        handleBinOp(node)
+      end
+    end
+
+=begin
+    def recurDeleteMult(node)
+      unless node.nil? || node.token.type != Netherite::TokenType::MULTIPLY
+        recurDeleteMult(node.left)
+        recurDeleteMult(node.right)
+        tryToDeleteMult(node)
+      end
+    end
+=end
+
+    def handleMultilpy(node)
+      udx = Marshal.load(Marshal.dump(node.left))  #u'(x)
+      vdx = Marshal.load(Marshal.dump(node.right)) #v'(x)
+      recurDiff(udx)
+      recurDiff(vdx)
+
+      u = node.left
+      v = node.right
+      node.replace_this_node(Netherite::Token.new(Netherite::TokenType::PLUS, "+"))
+      node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+      node.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+
+      node.left.parent = node
+      node.right.parent = node
+      node.left.left = udx
+      udx.parent = node.left.left
+      node.left.right = v
+      v.parent = node.left
+
+      node.right.left = u
+      u.parent = node.right
+      node.right.right = vdx
+      vdx.parent = node.right
     end
 
     def handleNodeAfterDivide(node)
@@ -110,6 +152,9 @@ module Differentiation
       udx.parent = temp_minus.left
       temp_minus.left.right = v
       v.parent = temp_minus.left
+      tryToDeleteMult(node.left.left)
+      tryToDeleteMult(node.left.right)
+      tryToDeleteMinus(node.left)
     end
 
     def handleNodeAfterPower(node)
@@ -119,7 +164,9 @@ module Differentiation
         addValueOfPowSimple(node)
       when Netherite::NodeType::VAR
         node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::VAR, node.value))
+        node.left.parent = node
         node.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
+        node.right.parent = node
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
         addValueOfPowSimple(node)
       when Netherite::NodeType::BINNODE
@@ -152,6 +199,7 @@ module Differentiation
                node.right.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, -(node.right.value - 1)))
                node.replace_this_node(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
               end
+              tryToDeletePlus(node)
             else
               node.parent.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MINUS, "-"))
               node.parent.right.left = node
@@ -191,14 +239,35 @@ module Differentiation
       if node.left.nodeType == Netherite::NodeType::NUMBER && node.right.nodeType == Netherite::NodeType::NUMBER
         new_value = node.left.value * node.right.value
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, new_value))
-      elsif node.left.nodeType == Netherite::NodeType::VAR && node.right.value == 1
-        node.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, node.left.value))
-      elsif node.right.nodeType == Netherite::NodeType::VAR && node.left.value == 1
-        node.replace_this_node(Netherite::Token.new(Netherite::TokenType::VAR, node.right.value))
+      elsif node.right.value == 1
+        node.left.parent = node.parent
+        if !node.parent.nil?
+          if node == node.parent.left
+            node.parent.left = node.left
+          else
+            node.parent.right = node.left
+          end
+        else
+          node.replace_node_with_node(node.left)
+        end
+      elsif node.left.value == 1
+        node.right.parent = node.parent
+        if !node.parent.nil?
+          if node == node.parent.left
+            node.parent.left = node.right
+          else
+            node.parent.right = node.right
+          end
+        else
+          node.replace_node_with_node(node.right)
+        end
       elsif node.right.value == 0 || node.left.value == 0
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, 0))
+        node.left = nil
+        node.right = nil
       end
     end
+
     def tryToDeletePlus(node)
       if node.left.nodeType == Netherite::NodeType::NUMBER && node.right.nodeType == Netherite::NodeType::NUMBER
         new_value = node.left.value + node.right.value
@@ -227,16 +296,7 @@ module Differentiation
         new_value = node.left.value** node.right.value
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, new_value))
       elsif node.right.value == 1
-        if node.parent.nil?
-          node = node.left
-          node.parent.left = nil
-          node.parent.right = nil
-          node.parent = nil
-        else
-          node = node.left
-          node.parent = node.parent.parent
-          node.parent.left = node
-        end
+        node.replace_node_with_node(node.left)
       end
     end
   end

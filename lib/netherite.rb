@@ -5,13 +5,14 @@ require_relative 'netherite/lexer'
 require_relative 'netherite/postfix_builder'
 require_relative 'netherite/ast_builder'
 require_relative 'differentiation/differentiation'
-
+require_relative 'equation'
 module Netherite
   class Error < StandardError; end
 
   # Your code goes here...
   extend Differentiation
-  Differentiation.diff("x/4", "x")
+  Differentiation.diff("3x-4x^2", "x")
+  #Equation.quadratic("2x - 5")
 end
 
 # a = Netherite::Lexer.new "cos(x*log(a,x)/(5*x-4*y^z))"
