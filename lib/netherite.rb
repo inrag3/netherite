@@ -11,7 +11,7 @@ module Netherite
 
   # Your code goes here...
   extend Differentiation
-  Differentiation.diff("3x-4x^2", "x")
+  Differentiation.diff("3x+4x", "x")
   #Equation.quadratic("2x - 5")
 end
 
