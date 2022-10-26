@@ -120,7 +120,6 @@ module Netherite
       @right = nil
       @indent = 0
       set_token_type! token
-
     end
 
     def set_token!(token)

@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a211efb1-693b-4287-a764-7b9aabfec64b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/integration/integration.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/integration/integration.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/integration/integration.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/netherite.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/netherite.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/netherite/ast_builder.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/netherite/ast_builder.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +41,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/inrage/RubymineProjects/netherite/lib/netherite.rb&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -157,6 +160,20 @@
       <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
       <method v="2" />
     </configuration>
+    <configuration name="netherite" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="netherite" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
+      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$MODULE_DIR$/lib/netherite.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda/Minitest">
       <predefined_log_file enabled="true" id="RUBY_TESTUNIT" />
       <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="" />
@@ -190,7 +207,8 @@
       <option name="presentableId" value="Default" />
       <updated>1666786364255</updated>
       <workItem from="1666786367371" duration="2354000" />
-      <workItem from="1666791779957" duration="5435000" />
+      <workItem from="1666791779957" duration="6597000" />
+      <workItem from="1666806929646" duration="1325000" />
     </task>
     <servers />
   </component>
@@ -209,8 +227,8 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/netherite@integration.rcov" NAME="integration Coverage Results" MODIFIED="1666797242055" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@integration.rcov" NAME="integration Coverage Results" MODIFIED="1666801118315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
     <SUITE FILE_PATH="coverage/netherite@ast_builder.rcov" NAME="ast_builder Coverage Results" MODIFIED="1666792784388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
-    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666796947530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666808252844" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="netherite" />
   </component>
 </project>
