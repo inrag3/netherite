@@ -14,12 +14,12 @@ module Differentiation
       @var = var
       @indent = 0
 
-      ast.printAST
-      puts "\n\n\n"
+      #ast.printAST
+      #puts "\n\n\n"
       recurDiff(ast)
       fixUnarNode(ast)
-      ast.printAST
-      ast.toString
+      #ast.printAST
+      #ast.toString
     end
 
     private
@@ -63,9 +63,16 @@ module Differentiation
         tryToDeleteMult(node.right) if !node.right.nil? && node.right.value == "*"
         tryToDeleteMult(node.left) if !node.left.nil? && node.left.value == "*"
       when Netherite::TokenType::POWER
-        handleNodeAfterPower(node.right)
-        tryToDeletePower(node)
-        tryToDeleteMult(node) if node.value == "*"
+        case node.left.token.type
+        when Netherite::TokenType::E
+          handleE(node)
+        when Netherite::TokenType::NUMBER
+          handleA(node)
+        else
+          handleNodeAfterPower(node.right)
+          tryToDeletePower(node)
+          tryToDeleteMult(node) if node.value == "*"
+        end
       when Netherite::TokenType::DIVIDE
         if !searchDiffVar(node.right)
           recurDiff(node.left)
@@ -178,6 +185,92 @@ module Differentiation
       tryToDeleteMult(node.left.left)
       tryToDeleteMult(node.left.right)
       tryToDeleteMinus(node.left)
+    end
+
+    def handleA(node)
+      copy_full_node = Marshal.load(Marshal.dump(node))
+      if (node.right.nodeType != Netherite::NodeType::VAR)
+        copy_right = Marshal.load(Marshal.dump(node.right))
+
+        if node.parent != nil
+          new_root = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+          new_root.left = copy_right
+          copy_right.parent = new_root
+          if node.parent.left == node
+            node.parent.left = new_root
+          else
+            node.parent.right = new_root
+          end
+          new_root.right = node
+          node.parent = new_root
+          node = new_root
+        else
+          copy_node = Marshal.load(Marshal.dump(node))
+          node.set_token! Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*")
+          node.nodeType = Netherite::NodeType::BINNODE
+          node.left = copy_right
+          copy_right.parent = node
+          node.right = copy_node
+          copy_node.parent = node
+        end
+
+        recurDiff(node.left)
+      end
+
+      if node.parent != nil
+        new_root = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+        new_root.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::LN, "ln"))
+        new_root.left.left = copy_full_node.left
+        copy_full_node.left.left.parent = new_root.left
+        if node.parent.left == node
+          node.parent.left = new_root
+        else
+          node.parent.right = new_root
+        end
+        new_root.right = node
+        node.parent = new_root
+        node = new_root
+      else
+        copy_node = Marshal.load(Marshal.dump(node))
+        node.set_token! Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*")
+        node.nodeType = Netherite::NodeType::BINNODE
+        node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::LN, "ln"))
+        node.left.left = copy_full_node.left
+        copy_full_node.left.parent = node.left
+        copy_full_node.left.parent = node
+        node.right = copy_node
+        copy_node.parent = node
+      end
+    end
+
+    def handleE(node)
+      if (node.right.nodeType != Netherite::NodeType::VAR)
+        copy_right = Marshal.load(Marshal.dump(node.right))
+
+        if node.parent != nil
+          new_root = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*"))
+          new_root.left = copy_right
+          copy_right.parent = new_root
+          if node.parent.left == node
+            node.parent.left = new_root
+          else
+            node.parent.right = new_root
+          end
+          new_root.right = node
+          node.parent = new_root
+          node = new_root
+        else
+          copy_node = Marshal.load(Marshal.dump(node))
+          node.set_token! Netherite::Token.new(Netherite::TokenType::MULTIPLY, "*")
+          node.nodeType = Netherite::NodeType::BINNODE
+          node.left = copy_right
+          copy_right.parent = node
+          node.right = copy_node
+          copy_node.parent = node
+        end
+
+        recurDiff(node.left)
+      end
     end
 
     def handleBinFunctions(node)
@@ -308,9 +401,9 @@ module Differentiation
       node.nodeType = Netherite::NodeType::BINNODE
       node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
       node.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::POWER, "^"))
-      node.right.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 2))
-      node.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::COS, "cos"))
-      node.right.right.left = copy_node
+      node.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 2))
+      node.right.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::COS, "cos"))
+      node.right.left.left = copy_node
       copy_node.parent = node.right.right
     end
 
@@ -321,10 +414,10 @@ module Differentiation
       node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::DIVIDE, "/"))
       node.left.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 1))
       node.left.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::POWER, "^"))
-      node.left.right.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 2))
-      node.left.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::COS, "cos"))
-      node.left.right.right.left = copy_node
-      copy_node.parent = node.left.right.right
+      node.left.right.right = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, 2))
+      node.left.right.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::COS, "cos"))
+      node.left.right.left.left = copy_node
+      copy_node.parent = node.left.right.left
     end
 
     def handleLn(node)
