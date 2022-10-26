@@ -3,8 +3,10 @@ require "./lib/netherite/lexer"
 require "./lib/netherite/postfix_builder"
 
 module Integration
+  class ArgumentError < StandardError; end
   extend self
-  def integrate(equation, var,  a, b)
+  def integrate(equation, var, a, b)
+    throw ArgumentError if equation.empty?
     lexer = Netherite::Lexer.new(equation)
     tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
     postfix = Netherite::PostfixBuilder.new(tokens)
@@ -38,6 +40,7 @@ module Integration
       evaluate_node(node.parent.right, var, i)
       return
     end
+    validation(node.parent) unless node.parent.nil?
     case node.parent&.value
     when "tg"
       calculate_tg(node.parent)
@@ -68,8 +71,18 @@ module Integration
         calculate_minus(node.parent)
       end
     else
-      # type code here
+      if node.parent.nil? && node.left.nil? && node.parent.nil?
+      else
+        throw ArgumentError
+      end
     end
+  end
+
+  def validation(node)
+    return if node.right.nil? || node.left.nil?
+
+    throw ArgumentError unless node.right.value.is_a?(Numeric)
+    throw ArgumentError unless node.left.value.is_a?(Numeric)
   end
 
   def substitution(node, var, i)

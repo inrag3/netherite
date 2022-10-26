@@ -8,8 +8,9 @@ require_relative 'differentiation/differentiation'
 require_relative 'integration/integration'
 require_relative 'equation'
 module Netherite
-  class Error < StandardError; end
   extend Differentiation
   extend Equation
   extend Integration
+
+  integrate('y*cos(y)','y',1,2)
 end

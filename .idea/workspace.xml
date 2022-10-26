@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a211efb1-693b-4287-a764-7b9aabfec64b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/netherite.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/netherite.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/equation.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/equation.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/integration/integration.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/integration/integration.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/netherite.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/netherite.rb" afterDir="false" />
     </list>
@@ -230,6 +230,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/netherite@integration.rcov" NAME="integration Coverage Results" MODIFIED="1666801118315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
     <SUITE FILE_PATH="coverage/netherite@ast_builder.rcov" NAME="ast_builder Coverage Results" MODIFIED="1666792784388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
-    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666821351450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666824541304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="netherite" />
   </component>
 </project>
