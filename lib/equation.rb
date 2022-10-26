@@ -92,6 +92,41 @@ module Equation
 
     end
 
+    def trigonometric(equation)
+      arr = equation.split()
+      value = 0
+      i = 1
+      while i < arr.length
+        if numeric?(arr[i])
+          if arr[i-1] == "+"
+            value -= arr[i].to_f
+          elsif arr[i-1] == "-"
+            value += arr[i].to_f
+          elsif arr[i-1] == "="
+            value += arr[i].to_f
+          end
+        end
+        i+=1
+      end
+
+      if value > 1 || value < -1
+        return "Has no roots"
+      end
+
+      case arr[0]
+      when /^cos/
+        puts "+-" + StandartCases(Math.acos(value)) + " + 2PI*n"
+      when /^sin/
+        puts "-(1)^n*" + StandartCases(Math.asin(value)) + " + PI*n"
+      when /^tg/
+        puts StandartCases(Math.atan(value)) + " + PI*n"
+      when /^ctg/
+        puts StandartCases((1/Math.atan(value))) + " + PI*n"
+      end
+
+
+    end
+
     private
     def find_coefs(node, a, b, c)
       a = 0
@@ -143,6 +178,26 @@ module Equation
       return if node.nil?
       nodes.push(node) if node.nodeType == Netherite::NodeType::VAR
       search_all_x(node.left, nodes) || search_all_x(node.right, nodes)
+    end
+
+    def numeric?(lookAhead)
+      lookAhead.match?(/[[:digit:]]/)
+    end
+
+    def StandartCases(value)
+      case value
+      when Math::PI
+        "PI"
+      when Math::PI/2
+        "PI/2"
+      when Math::PI/3
+        "PI/3"
+      when Math::PI/4
+        "PI/4"
+      when Math::PI/6
+        "PI/6"
+      else value.to_s
+      end
     end
   end
 end
