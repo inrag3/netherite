@@ -17,6 +17,7 @@ module Differentiation
       ast.printAST
       puts "\n\n\n"
       recurDiff(ast)
+      fixUnarNode(ast)
       ast.printAST
       ast.toString
     end
@@ -26,10 +27,13 @@ module Differentiation
       case root.nodeType
       when Netherite::NodeType::BINNODE
         handleBinOp(root)
+      when Netherite::NodeType::UNARNODE
+        recurDiff(root.left)
       when Netherite::NodeType::VAR
         root = root.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, root.value != @var ? 0 : 1))
       end
     end
+
 
     def handleBinOp(node)
       if !searchDiffVar(node) && node.parent.nil?
@@ -51,10 +55,13 @@ module Differentiation
           handleNodeAfterMultiply(node.left)
           handleNodeAfterMultiply(node.right)
         end
-        tryToDeleteMult(node)
+        tryToDeleteMult(node) if node.value == "*"
+        tryToDeleteMult(node.right) if !node.right.nil? && node.right.value == "*"
+        tryToDeleteMult(node.left) if !node.left.nil? && node.left.value == "*"
       when Netherite::TokenType::POWER
         handleNodeAfterPower(node.right)
-        #tryToDeletePower(node)
+        tryToDeletePower(node)
+        tryToDeleteMult(node) if node.value == "*"
       when Netherite::TokenType::DIVIDE
         if !searchDiffVar(node.right)
           recurDiff(node.left)
@@ -62,6 +69,24 @@ module Differentiation
           handleNodeAfterDivide(node)
         end
       end
+    end
+
+    def fixUnarNode(node)
+      nodes = Array.new
+      searchAllUnarNodes(node, nodes)
+      nodes.each do |n|
+        n.right = n.left
+        n.left.parent = nil
+        n.left = nil
+      end
+    end
+
+    def searchAllUnarNodes(node, nodes)
+      return if node.nil?
+      if node.token.type == Netherite::TokenType::UNMINUS || defined?(node.token.type.type) && node.token.value == "-"
+        nodes.push(node)
+      end
+      searchAllUnarNodes(node.left, nodes) || searchAllUnarNodes(node.right, nodes)
     end
 
     def handleNodeAfterPlus(node)
@@ -72,6 +97,8 @@ module Differentiation
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, node.value != @var ? 0 : 1))
       when Netherite::NodeType::BINNODE
         handleBinOp(node)
+      when Netherite::NodeType::UNARNODE
+        handleNodeAfterPlus(node.left)
       end
     end
 
@@ -84,18 +111,10 @@ module Differentiation
         end
       when Netherite::NodeType::BINNODE
         handleBinOp(node)
+      when Netherite::NodeType::UNARNODE
+        handleNodeAfterMultiply(node.left)
       end
     end
-
-=begin
-    def recurDeleteMult(node)
-      unless node.nil? || node.token.type != Netherite::TokenType::MULTIPLY
-        recurDeleteMult(node.left)
-        recurDeleteMult(node.right)
-        tryToDeleteMult(node)
-      end
-    end
-=end
 
     def handleMultilpy(node)
       udx = Marshal.load(Marshal.dump(node.left))  #u'(x)
@@ -112,7 +131,7 @@ module Differentiation
       node.left.parent = node
       node.right.parent = node
       node.left.left = udx
-      udx.parent = node.left.left
+      udx.parent = node.left
       node.left.right = v
       v.parent = node.left
 
@@ -160,8 +179,15 @@ module Differentiation
     def handleNodeAfterPower(node)
       case node.nodeType
       when Netherite::NodeType::NUMBER
-        node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, node.value - 1))
-        addValueOfPowSimple(node)
+        if node.parent.value == "-"
+          node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, node.value + 1))
+          addValueOfPowSimple(node.parent)
+        else
+          node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, node.value - 1))
+          addValueOfPowSimple(node)
+        end
+      when Netherite::NodeType::UNARNODE
+        handleNodeAfterPower(node.left)
       when Netherite::NodeType::VAR
         node.left = Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::VAR, node.value))
         node.left.parent = node
@@ -238,7 +264,17 @@ module Differentiation
     def tryToDeleteMult(node)
       if node.left.nodeType == Netherite::NodeType::NUMBER && node.right.nodeType == Netherite::NodeType::NUMBER
         new_value = node.left.value * node.right.value
-        node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, new_value))
+        parent = node.parent
+        if node == node.parent.right
+          right = true
+        end
+        node.replace_node_with_node(Netherite::Node.new(Netherite::Token.new(Netherite::TokenType::NUMBER, new_value)))
+        node.parent = parent
+        if right
+          node.parent.right = node
+        else
+          node.parent.left = node
+        end
       elsif node.right.value == 1
         node.left.parent = node.parent
         if !node.parent.nil?
@@ -247,6 +283,7 @@ module Differentiation
           else
             node.parent.right = node.left
           end
+          node.parent = nil
         else
           node.replace_node_with_node(node.left)
         end
@@ -265,6 +302,17 @@ module Differentiation
         node.replace_this_node(Netherite::Token.new(Netherite::TokenType::NUMBER, 0))
         node.left = nil
         node.right = nil
+      end
+      if !node.parent.nil? && !node.parent.left.nil? && !node.left.nil? && node.parent.left.nodeType == Netherite::NodeType::NUMBER && node.left.nodeType == Netherite::NodeType::NUMBER
+        if node.parent.value == "*" && node.value == "*"
+          temp_value = node.parent.left.value
+          node = node.parent
+          node.right.right.parent = node
+          node.right.left.parent = node
+          node.left = node.right.left
+          node.right = node.right.right
+          node.left.value = temp_value * node.left.value
+        end
       end
     end
 
@@ -290,7 +338,6 @@ module Differentiation
       end
     end
 
-    #todo очень сильно подумать
     def tryToDeletePower(node)
       if node.left.nodeType == Netherite::NodeType::NUMBER && node.right.nodeType == Netherite::NodeType::NUMBER
         new_value = node.left.value** node.right.value

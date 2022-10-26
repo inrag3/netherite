@@ -190,7 +190,8 @@ module Netherite
     end
 
     def replace_node_with_node(node_new_value)
-      self.replace_this_node(node_new_value.token)
+      self.set_token! (Netherite::Token.new(node_new_value.token, node_new_value.value))
+      self.set_token_type! (Netherite::Token.new(node_new_value.token, node_new_value.value))
       self.left = node_new_value.left
       self.right = node_new_value.right
       if !node_new_value.right.nil?
