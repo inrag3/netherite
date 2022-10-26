@@ -9,6 +9,7 @@ module Integration
     tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
     postfix = Netherite::PostfixBuilder.new(tokens)
     ast = Netherite::ASTBuilder.new(postfix.postfix).build
+    ast.printAST
     simpson(ast, var, a, b)
   end
 
@@ -16,12 +17,11 @@ module Integration
   def simpson(equation, var, a, b)
     h = (b - a) / 6.0
     res = []
-    equation.freeze
     [a, (a + b) / 2.0, b].each_with_index do |i, index|
       dumped = Marshal.load(Marshal.dump(equation))
       res[index] = evaluate(dumped, var, i)
     end
-    res[1] = 4.0
+    res[1] *= 4.0
     sum = res.sum
     sum * h
   end
@@ -51,16 +51,34 @@ module Integration
     when "*"
       calculate_multiply(node.parent)
     when "+"
-      calculate_multiply(node.parent)
+      if node.parent.token.unary_operation?
+        calculate_unary_plus(node.parent)
+      else
+        calculate_plus(node.parent)
+      end
+    when "-"
+      if node.parent.token.unary_operation?
+        calculate_unary_minus(node.parent)
+      else
+        calculate_minus(node.parent)
+      end
     else
       # type code here
     end
   end
 
   def substitution(node, var, i)
+    if node.left&.token.e?
+      token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math::E)
+      node.left.set_token!(token)
+    end
+    if node.right&.token&.e?
+      token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math::E)
+      node.right.set_token!(token)
+    end
     if node.right&.value == var
       token = Netherite::Token.new(Netherite::TokenType::NUMBER, i)
-      node.right&.set_token!(token)
+      node.right.set_token!(token)
     end
     if node.left&.value == var
       token = Netherite::Token.new(Netherite::TokenType::NUMBER, i)
@@ -70,6 +88,24 @@ module Integration
 
   def calculate_power(node)
     token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f**node.right.value.to_f)
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_e(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math::E)
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_unary_minus(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, -node.left.value.to_f)
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_unary_plus(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f)
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end
@@ -87,7 +123,13 @@ module Integration
   end
 
   def calculate_plus(node)
-    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f+node.right.value.to_f)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f + node.right.value.to_f)
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_minus(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f - node.right.value.to_f)
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end
