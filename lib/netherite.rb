@@ -12,6 +12,6 @@ module Netherite
   extend Differentiation
   extend Integration
 
-  pp Integration.integrate('-x*in(x)*x^2+xcos(x^2)*e+sin(3)', 'x', -1, 0)
+  p Integration.integrate('-x*cos(x)', 'x', 0, -1)
 end
 
