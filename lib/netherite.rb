@@ -11,8 +11,12 @@ module Netherite
 
   # Your code goes here...
   extend Differentiation
-  Differentiation.diff("3x+4x", "x")
+  #Differentiation.diff("3x+4x", "x")
   #Equation.quadratic("2x - 5")
+  #Equation.biquadratic("2x^4-5x^2-3")
+  #Equation.trigonometric("tg(x) = 1")
+  #Equation.cubic("x^3 - 2x^2 - x + 1")
+
 end
 
 # a = Netherite::Lexer.new "cos(x*log(a,x)/(5*x-4*y^z))"
