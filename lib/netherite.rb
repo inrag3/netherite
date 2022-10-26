@@ -5,20 +5,13 @@ require_relative 'netherite/lexer'
 require_relative 'netherite/postfix_builder'
 require_relative 'netherite/ast_builder'
 require_relative 'differentiation/differentiation'
+require_relative 'integration/integration'
 
 module Netherite
   class Error < StandardError; end
-
-  # Your code goes here...
   extend Differentiation
-  Differentiation.diff("x/4", "x")
+  extend Integration
+
+  pp Integration.integrate('-x*in(x)*x^2+xcos(x^2)*e+sin(3)', 'x', -1, 0)
 end
 
-# a = Netherite::Lexer.new "cos(x*log(a,x)/(5*x-4*y^z))"
-# b = a.normalize_tokens(a.fix_unar_operations(a.tokens))
-# c = Netherite::PostfixBuilder.new b
-# d = c.postfix
-# pp d
-# e = Netherite::ASTBuilder.new d
-# f = e.build
-# pp f
