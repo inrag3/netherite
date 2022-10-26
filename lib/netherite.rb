@@ -11,7 +11,7 @@ module Netherite
 
   # Your code goes here...
   extend Differentiation
-  #Differentiation.diff("3x+4x", "x")
+  #Differentiation.diff("", "x")
   #Equation.quadratic("2x - 5")
   #Equation.biquadratic("2x^4-5x^2-3")
   #Equation.trigonometric("tg(x) = 1")
