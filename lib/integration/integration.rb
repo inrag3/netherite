@@ -9,7 +9,6 @@ module Integration
     tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
     postfix = Netherite::PostfixBuilder.new(tokens)
     ast = Netherite::ASTBuilder.new(postfix.postfix).build
-    ast.printAST
     simpson(ast, var, a, b)
   end
 
@@ -40,6 +39,12 @@ module Integration
       return
     end
     case node.parent&.value
+    when "tg"
+      calculate_tg(node.parent)
+    when "ctg"
+      calculate_ctg(node.parent)
+    when "log"
+      calculate_log(node.parent)
     when "^"
       calculate_power(node.parent)
     when "/"
@@ -68,7 +73,7 @@ module Integration
   end
 
   def substitution(node, var, i)
-    if node.left&.token.e?
+    if node.left&.token&.e?
       token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math::E)
       node.left.set_token!(token)
     end
@@ -142,6 +147,24 @@ module Integration
 
   def calculate_cos(node)
     token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.cos(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_tg(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.tan(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_ctg(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, 1.0 / Math.tan(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_log(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.log(node.right.value.to_f, node.left.value.to_f))
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end
