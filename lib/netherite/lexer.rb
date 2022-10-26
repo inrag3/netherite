@@ -139,7 +139,7 @@ module Netherite
         if tokens[0].type == TokenType::PLUS
           tokens[0].type = TokenType::UNPLUS
         end
-        i = 1
+        i = 0
         while i < tokens.size - 1
           if (tokens[i].lpar? || tokens[i].operation? || tokens[i].border?) && (tokens[i + 1].type == TokenType::MINUS || tokens[i + 1].type == TokenType::PLUS)
 

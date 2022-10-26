@@ -75,8 +75,8 @@ module Netherite
       temp = Node.new(@tokens[@pos])
       @pos += 1
       throw ASTBuilderException "отсутствует аргумент у функции" if @pos >= @tokens.size
-      temp.right = create_node
-      temp.right.parent = temp
+      temp.left = create_node
+      temp.left.parent = temp
       temp
     end
 
@@ -187,6 +187,19 @@ module Netherite
         end
       end
       temp
+    end
+
+    def replace_node_with_node(node_new_value)
+      self.set_token! (Netherite::Token.new(node_new_value.token, node_new_value.value))
+      self.set_token_type! (Netherite::Token.new(node_new_value.token, node_new_value.value))
+      self.left = node_new_value.left
+      self.right = node_new_value.right
+      if !node_new_value.right.nil?
+        node_new_value.right.parent = self
+      end
+      if !node_new_value.left.nil?
+        node_new_value.left.parent = self
+      end
     end
 
     def printAST(node = self)
