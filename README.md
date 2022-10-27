@@ -16,11 +16,11 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-Use 'Netherite.diff(equation, var)' to differentiate equation by varibable var
-Use 'Netherite.integrate(equation, var, a, b)' to integrate by varibable var in 
-Use 'Netherite.quadratic(equation)' for quadratic equations
-Use 'Netherite.cubic(equation)' and 'Netherite.biquadratic(equation)' for cubic and biquadratic equations
-Use 'Netherite.trigonometric(equation)' for trigonometric equations
+* Use 'Netherite.diff(equation, var)' to differentiate equation by varibable var
+* Use 'Netherite.integrate(equation, var, a, b)' to integrate by varibable var in 
+* Use 'Netherite.quadratic(equation)' for quadratic equations
+* Use 'Netherite.cubic(equation)' and 'Netherite.biquadratic(equation)' for cubic and biquadratic equations
+* Use 'Netherite.trigonometric(equation)' for trigonometric equations
 
 ## Development
 
