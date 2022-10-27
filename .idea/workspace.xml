@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a211efb1-693b-4287-a764-7b9aabfec64b" name="Changes" comment="">
+    <list default="true" id="63130c7f-31d5-468a-88e5-ab59ab64874c" name="Changes" comment="Process e^x and a^x">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/integration/integration.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/integration/integration.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/netherite.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/netherite.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,8 +224,15 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/netherite@integration.rcov" NAME="integration Coverage Results" MODIFIED="1666801118315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@test_numeric_one_number.rcov" NAME="test_numeric_one_number Coverage Results" MODIFIED="1665935648428" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@TestNetherite.rcov" NAME="TestNetherite Coverage Results" MODIFIED="1666193191743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@lexer_test_rb.rcov" NAME="lexer_test.rb Coverage Results" MODIFIED="1665935662064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@test_numeric.rcov" NAME="test_numeric Coverage Results" MODIFIED="1665935044709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@LexerTest.rcov" NAME="LexerTest Coverage Results" MODIFIED="1665935052847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@test_numeric_two_operands_mult.rcov" NAME="test_numeric_two_operands_mult Coverage Results" MODIFIED="1665935685116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@test_netherite_rb.rcov" NAME="test_netherite.rb Coverage Results" MODIFIED="1665936573974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
     <SUITE FILE_PATH="coverage/netherite@ast_builder.rcov" NAME="ast_builder Coverage Results" MODIFIED="1666792784388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
-    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666810352431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@netherite.rcov" NAME="netherite Coverage Results" MODIFIED="1666818612813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
+    <SUITE FILE_PATH="coverage/netherite@integration.rcov" NAME="integration Coverage Results" MODIFIED="1666801118315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="netherite" />
   </component>
 </project>

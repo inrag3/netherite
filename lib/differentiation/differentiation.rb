@@ -9,7 +9,7 @@ module Differentiation
       tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
       postfix = Netherite::PostfixBuilder.new(tokens)
       ast = Netherite::ASTBuilder.new(postfix.postfix).build
-      pp ast
+      #pp ast
 
       @var = var
       @indent = 0
