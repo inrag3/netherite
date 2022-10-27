@@ -4,12 +4,12 @@ require "./lib/netherite/postfix_builder"
 
 module Integration
   extend self
-  def integrate(equation, var,  a, b)
+  def integrate(equation, var, a, b)
+    throw ArgumentError if equation.empty? || var.empty?
     lexer = Netherite::Lexer.new(equation)
     tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
     postfix = Netherite::PostfixBuilder.new(tokens)
     ast = Netherite::ASTBuilder.new(postfix.postfix).build
-    ast.printAST
     simpson(ast, var, a, b)
   end
 
@@ -39,7 +39,14 @@ module Integration
       evaluate_node(node.parent.right, var, i)
       return
     end
+    validation(node.parent) unless node.parent.nil?
     case node.parent&.value
+    when "tg"
+      calculate_tg(node.parent)
+    when "ctg"
+      calculate_ctg(node.parent)
+    when "log"
+      calculate_log(node.parent)
     when "^"
       calculate_power(node.parent)
     when "/"
@@ -63,12 +70,22 @@ module Integration
         calculate_minus(node.parent)
       end
     else
-      # type code here
+      if node.parent.nil? && node.left.nil? && node.parent.nil?
+      else
+        throw ArgumentError
+      end
     end
   end
 
+  def validation(node)
+    return if node.right.nil? || node.left.nil?
+
+    throw ArgumentError unless node.right.value.is_a?(Numeric)
+    throw ArgumentError unless node.left.value.is_a?(Numeric)
+  end
+
   def substitution(node, var, i)
-    if node.left&.token.e?
+    if node.left&.token&.e?
       token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math::E)
       node.left.set_token!(token)
     end
@@ -117,7 +134,8 @@ module Integration
   end
 
   def calculate_divide(node)
-    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f / node.right.value)
+    divider = node.right.value.to_f.zero? ? 1 : node.right.value.to_f
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f / divider)
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end
@@ -142,6 +160,25 @@ module Integration
 
   def calculate_cos(node)
     token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.cos(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_tg(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.tan(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_ctg(node)
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, 1.0 / Math.tan(node.left.value.to_f))
+    node.replace_node_with_node(Netherite::Node.new(token))
+    to_leaf(node)
+  end
+
+  def calculate_log(node)
+    abort "Извините, мы такую задачу пока не можем решить!" if node.right.value.to_f.negative?
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.log(node.right.value.to_f, node.left.value.to_f))
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end

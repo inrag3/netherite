@@ -13,9 +13,7 @@ module Equation
       tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
       postfix = Netherite::PostfixBuilder.new(tokens)
       ast = Netherite::ASTBuilder.new(postfix.postfix).build
-      ast.printAST
       a, b, c = find_coefs(ast, a, b, c)
-
       d = discriminant(a, b, c)
       if a != 0
         if d < 0
