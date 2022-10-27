@@ -3,10 +3,9 @@ require "./lib/netherite/lexer"
 require "./lib/netherite/postfix_builder"
 
 module Integration
-  class ArgumentError < StandardError; end
   extend self
   def integrate(equation, var, a, b)
-    throw ArgumentError if equation.empty?
+    throw ArgumentError if equation.empty? || var.empty?
     lexer = Netherite::Lexer.new(equation)
     tokens = lexer.normalize_tokens(lexer.fix_unar_operations(lexer.tokens))
     postfix = Netherite::PostfixBuilder.new(tokens)
@@ -135,7 +134,8 @@ module Integration
   end
 
   def calculate_divide(node)
-    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f / node.right.value)
+    divider = node.right.value.to_f.zero? ? 1 : node.right.value.to_f
+    token = Netherite::Token.new(Netherite::TokenType::NUMBER, node.left.value.to_f / divider)
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)
   end
@@ -177,6 +177,7 @@ module Integration
   end
 
   def calculate_log(node)
+    abort "Извините, мы такую задачу пока не можем решить!" if node.right.value.to_f.negative?
     token = Netherite::Token.new(Netherite::TokenType::NUMBER, Math.log(node.right.value.to_f, node.left.value.to_f))
     node.replace_node_with_node(Netherite::Node.new(token))
     to_leaf(node)

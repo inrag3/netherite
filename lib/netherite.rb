@@ -11,6 +11,4 @@ module Netherite
   extend Differentiation
   extend Equation
   extend Integration
-
-  integrate('y*cos(y)','y',1,2)
 end
