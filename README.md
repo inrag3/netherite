@@ -2,7 +2,7 @@
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/netherite`. To experiment with that code, run `bin/console` for an interactive prompt.
 
-TODO: Delete this and the text above, and describe your gem
+Gem that handles simple mathematical operations
 
 ## Installation
 
@@ -16,7 +16,11 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+Use 'Netherite.diff(equation, var)' to differentiate equation by varibable var
+Use 'Netherite.integrate(equation, var, a, b)' to integrate by varibable var in 
+Use 'Netherite.quadratic(equation)' for quadratic equations
+Use 'Netherite.cubic(equation)' and 'Netherite.biquadratic(equation)' for cubic and biquadratic equations
+Use 'Netherite.trigonometric(equation)' for trigonometric equations
 
 ## Development
 
